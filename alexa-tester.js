@@ -1,7 +1,6 @@
 'use strict';
-require('dotenv').load();
-const helper = require('../helpers/test-helper');
-const RequestBuilder = require('../helpers/request-builder');
+const helper = require('./helpers/helper');
+const rp = require('request-promise');
 
 // Define functions and function mapping for skill tree
 // Need to be separated out into helper 
@@ -64,7 +63,7 @@ function traverse(node, path, paths) {
     }
 }
 
-async function testSkillTree(skillTreeJson, handler) {
+async function testSkillTree(skillTreeJson, endpoint) {
     const json = await helper.getInteractionModelFromJSON(skillTreeJson);
     const model = JSON.parse(json);
 
@@ -82,11 +81,11 @@ async function testSkillTree(skillTreeJson, handler) {
         const session = {
             sessionId: (i + '').padStart(4, "0")
         };
-        return testPath(path, handler, info, session);
+        return testPath(path, endpoint, info, session);
     }));
 }
 
-async function testPath(path, handler, info, session) {
+async function testPath(path, endpoint, info, session) {
     let pathResponses = [];
     let attributes = {};
     
@@ -101,9 +100,15 @@ async function testPath(path, handler, info, session) {
             node.slots.Answer.value = answerValue;
         }
         const newRequest = helper.buildRequest(info, session, attributes, node);
-        const response = await helper.sendRequest(newRequest, handler);
 
-        attributes = response.sessionAttributes;
+        const response = await rp({
+            method: 'POST',
+            uri: endpoint,
+            body: newRequest,
+            json: true
+        });
+
+        attributes = response.sessionAttributes || {};
 
         pathResponses[i] = {
             node: node,
@@ -132,7 +137,7 @@ async function testPath(path, handler, info, session) {
     }
 }
 
-testSkillTree(exampleModel, alexaSkill.handler)
+testSkillTree('models/example-basic.json', 'http://localhost:8060/alexa')
     .then(response => {
         for (let r of response) {
             console.log(r.report);
