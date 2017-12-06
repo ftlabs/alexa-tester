@@ -2,12 +2,9 @@
 require('dotenv').load();
 const helper = require('../helpers/test-helper');
 const RequestBuilder = require('../helpers/request-builder');
-// const alexaSkill = require('../routes/voice-alexa.js');
-
-const exampleModel = "tests/models/example.json";
-
 
 // Define functions and function mapping for skill tree
+// Need to be separated out into helper 
 
 const stringToFunction = {
     "correctAnswer": correctAnswer,
@@ -30,7 +27,6 @@ function incorrectAnswer(outputSpeech) {
 function misunderstoodAnswer(outputSpeech) {
     return "NOT AN ANSWER";
 }
-
 
 
 function getSimpleNode(node) {
