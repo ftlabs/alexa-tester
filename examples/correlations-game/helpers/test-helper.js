@@ -1,4 +1,5 @@
 'use strict';
+require('dotenv').config();
 const correlations_service = require('../bin/lib/correlations');
 
 function getCorrectAnswer(personX, people) {

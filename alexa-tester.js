@@ -2,32 +2,6 @@
 const helper = require('./helpers/helper');
 const rp = require('request-promise');
 
-// Define functions and function mapping for skill tree
-// Need to be separated out into helper 
-
-const stringToFunction = {
-    "correctAnswer": correctAnswer,
-    "incorrectAnswer": incorrectAnswer,
-    "misunderstoodAnswer": misunderstoodAnswer
-};
-
-function correctAnswer(outputSpeech) {
-    const speech = helper.processSpeech(outputSpeech);
-    const possiblePeople = helper.getPeopleFromQuestion(speech);
-    return helper.getCorrectAnswer(possiblePeople.personX, possiblePeople.people);
-}
-
-function incorrectAnswer(outputSpeech) {
-    const speech = helper.processSpeech(outputSpeech);
-    const possiblePeople = helper.getPeopleFromQuestion(speech);
-    return helper.getIncorrectAnswer(possiblePeople.personX, possiblePeople.people);
-}
-
-function misunderstoodAnswer(outputSpeech) {
-    return "NOT AN ANSWER";
-}
-
-
 function getSimpleNode(node) {
     let simpleNode = {
         type: node.requestType
@@ -63,7 +37,7 @@ function traverse(node, path, paths) {
     }
 }
 
-async function testSkillTree(skillTreeJson, endpoint) {
+async function testSkillTree(skillTreeJson, endpoint, functionMap) {
     const json = await helper.getInteractionModelFromJSON(skillTreeJson);
     const model = JSON.parse(json);
 
@@ -81,11 +55,11 @@ async function testSkillTree(skillTreeJson, endpoint) {
         const session = {
             sessionId: (i + '').padStart(4, "0")
         };
-        return testPath(path, endpoint, info, session);
+        return testPath(path, endpoint, info, session, functionMap);
     }));
 }
 
-async function testPath(path, endpoint, info, session) {
+async function testPath(path, endpoint, info, session, functionMap) {
     let pathResponses = [];
     let attributes = {};
     
@@ -96,7 +70,7 @@ async function testPath(path, endpoint, info, session) {
         }
         if (node.slots) {
             const functionName = node.slots.Answer.value.function;
-            const answerValue = await stringToFunction[functionName](attributes.speechOutput);
+            const answerValue = await functionMap[functionName](attributes.speechOutput);
             node.slots.Answer.value = answerValue;
         }
         const newRequest = helper.buildRequest(info, session, attributes, node);
@@ -137,9 +111,4 @@ async function testPath(path, endpoint, info, session) {
     }
 }
 
-testSkillTree('models/example-basic.json', 'http://localhost:8060/alexa')
-    .then(response => {
-        for (let r of response) {
-            console.log(r.report);
-        }
-    })
+module.exports = testSkillTree;
