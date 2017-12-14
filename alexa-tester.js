@@ -25,6 +25,7 @@ function traverseTree(node) {
 }
 
 function traverse(node, path, paths) {
+    // Update to find and resolve loops
     if (node.children) {
         for (let childNode of node.children) {
             let newPath = path.slice();
@@ -93,18 +94,21 @@ async function testPath(path, endpoint, info, session, functionMap) {
             if (response.response.shouldEndSession) {
                 return {
                     responseTree: pathResponses,
+                    success: true,
                     report: "Session Ended As Expected"
                 };
             } else {
                 return {
                     responseTree: pathResponses,                    
-                    report: "Error: Session Did Not End As Expected"
+                    success: false,
+                    report: "ERROR: Session Did Not End As Expected",
                 };
             }
         }
         if (i === path.length - 1) {
             return {
-                responseTree: pathResponses,                
+                responseTree: pathResponses,     
+                success: true,           
                 report: "Branch Ended"
             }
         }
