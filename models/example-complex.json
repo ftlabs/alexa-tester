@@ -15,7 +15,8 @@
                             "function": "correctAnswer"
                         }
                       }
-                    }
+                    },
+                    "shouldEndSession": false                    
                 },
                 {
                     "requestType": "IntentRequest",
@@ -27,7 +28,24 @@
                             "function": "incorrectAnswer"
                         }
                       }
-                    }
+                    },
+                    "shouldEndSession": false                    
+                },
+                {
+                    "requestType": "IntentRequest",
+                    "name": "AMAZON.StopIntent",
+                    "children": [
+                        {
+                            "requestType": "IntentRequest",
+                            "name": "AMAZON.YesIntent",
+                            "shouldEndSession": false
+                        },
+                        {
+                            "requestType": "IntentRequest",
+                            "name": "AMAZON.NoIntent",
+                            "shouldEndSession": true  
+                        }
+                    ]
                 },
                 {
                     "requestType": "IntentRequest",
@@ -52,7 +70,8 @@
             "children": [
                 {
                     "requestType": "IntentRequest",
-                    "name": "AMAZON.YesIntent"
+                    "name": "AMAZON.YesIntent",
+                    "shouldEndSession": false                    
                 },
                 {
                     "requestType": "IntentRequest",
