@@ -11,13 +11,18 @@ const functionsMap = require(`./${functionsMapPath}`);
 alexaTester(filePath, endpoint, functionsMap)
     .then(response => {
         let success = true;
+        let count = 0;
+        let plural = '';
+
         for (let r of response) {
-            console.log(r.report);
+            if (r.success) count += 1;
             success = success && r.success;
         }
+        if (count != 1) plural = 'es';
+
         if (success) {
-            console.log("SUCCEEDED");
+            console.log(`Success. ${count}/${response.length} branch${plural} passed.`);
         } else {
-            console.log("FAILED");
+            console.log(`Failure. ${count}/${response.length} branch${plural} passed.`);
         }
     });
