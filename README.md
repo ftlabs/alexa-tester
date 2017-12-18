@@ -30,6 +30,7 @@ Nodes in the tree have the following attributes:
 - (optional) `children`: an array of request nodes
 - (optional) `slots`: a slot object (see below)
 - (optional) `shouldEndSession`: true or false
+- (optional) `repeatRequest`: an integer. Repeats the request n number of times
 
 Slots follow a similiar format to those sent in requests to the Alexa Skill endpoint. Each slot is defined as an attribute of the slots object. Each slot needs a name and a value.
 Slot values can be literal, for example you can test what happens when you pass a string or number. However, Alexa Tester is powerful in that it supports functions for values. These functions must be defined by the developer and they take, as input, the response from the previous request. By using this information, developers can direct conversations down specific logical paths, for example given a quiz question you can test both the correct and incorrect answer path.
@@ -64,3 +65,12 @@ function incorrectAnswer(outputSpeech) {
 module.exports = functionMapping;
 ```
 
+## Understanding Results
+
+Alexa Tester works by calculating all the possible paths from the provided tree and testing each of these against the given endpoint.
+If the path completes and the final request response matches the expected result, the program will return 'Success'.
+
+If the final request response is not as expected, it will return one of the following messages:
+
+- `ERROR: Session Did Not End As Expected`
+- `ERROR: Session Unexpectedly Ended`
