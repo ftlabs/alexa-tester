@@ -16,8 +16,28 @@
                         }
                       }
                     },
-                    "repeatRequest": 3,
-                    "shouldEndSession": false
+                    "repeatRequest": 5,
+                    "children": [
+                        {
+                            "requestType": "IntentRequest",
+                            "name": "AnswerIntent",
+                            "slots": {
+                              "Answer": {
+                                "name": "Answer",
+                                "value": {
+                                    "function": "incorrectAnswer"
+                                }
+                              }
+                            },
+                            "children": [
+                                {
+                                    "requestType": "IntentRequest",
+                                    "name": "AMAZON.NoIntent",
+                                    "shouldEndSession": true            
+                                }
+                            ]                                        
+                        }
+                    ]
                 },
                 {
                     "requestType": "IntentRequest",
@@ -30,7 +50,34 @@
                         }
                       }
                     },
-                    "shouldEndSession": false                    
+                    "shouldEndSession": false,
+                    "children": [
+                        {
+                            "requestType": "IntentRequest",
+                            "name": "AMAZON.YesIntent",
+                            "shouldEndSession": false,
+                            "children": [
+                                {
+                                    "requestType": "IntentRequest",
+                                    "name": "AnswerIntent",
+                                    "slots": {
+                                        "Answer": {
+                                            "name": "Answer",
+                                            "value": {
+                                                "function": "incorrectAnswer"
+                                            }
+                                        }
+                                    },
+                                    "shouldEndSession": false
+                                }
+                            ]   
+                        },
+                        {
+                            "requestType": "IntentRequest",
+                            "name": "AMAZON.NoIntent",
+                            "shouldEndSession": true         
+                        }
+                    ]                       
                 },
                 {
                     "requestType": "IntentRequest",
