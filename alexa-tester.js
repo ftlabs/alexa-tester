@@ -2,7 +2,7 @@
 const helper = require('./helpers/helper');
 const rp = require('request-promise');
 
-function getSimpleNode(node) {
+function getSimpleNode(node, repeatedNode) {
     let simpleNode = {
         type: node.requestType
     };
@@ -12,7 +12,7 @@ function getSimpleNode(node) {
     if (node.slots) {
         simpleNode.slots = node.slots;
     }
-    if (node.shouldEndSession) {
+    if (typeof node.shouldEndSession !== "undefined" && !repeatedNode) {
         simpleNode.shouldEndSession = node.shouldEndSession;
     }
     return simpleNode;
@@ -25,15 +25,19 @@ function traverseTree(node) {
 }
 
 function traverse(node, path, paths) {
-    // Update to find and resolve loops
+    if (node.repeatRequest) {
+        for (let i = 0; i < node.repeatRequest - 1; i++) {
+            path.push(getSimpleNode(node, true));        
+        }
+    }
     if (node.children) {
         for (let childNode of node.children) {
             let newPath = path.slice();
-            newPath.push(getSimpleNode(node));
+            newPath.push(getSimpleNode(node, false));
             traverse(childNode, newPath, paths);
         }
     } else {
-        path.push(getSimpleNode(node));
+        path.push(getSimpleNode(node, false));
         paths.push(path);
     }
 }
@@ -63,16 +67,20 @@ async function testSkillTree(skillTreeJson, endpoint, functionMap) {
 async function testPath(path, endpoint, info, session, functionMap) {
     let pathResponses = [];
     let attributes = {};
-    
+        
     for (let i = 0; i < path.length; i++) {
-        let node = path[i];
+        const node = path[i];
         if (node.type !== "LaunchRequest") {
             info.newSession = false;
         }
         if (node.slots) {
             const functionName = node.slots.Answer.value.function;
             const answerValue = await functionMap[functionName](attributes.speechOutput);
-            node.slots.Answer.value = answerValue;
+            node.slots = {
+                Answer: {
+                    value: answerValue
+                }
+            };
         }
         const newRequest = helper.buildRequest(info, session, attributes, node);
 
@@ -93,13 +101,13 @@ async function testPath(path, endpoint, info, session, functionMap) {
         if (node.shouldEndSession) {
             if (response.response.shouldEndSession) {
                 return {
-                    responseTree: pathResponses,
+                    responses: pathResponses,
                     success: true,
                     report: "Session Ended As Expected"
                 };
             } else {
                 return {
-                    responseTree: pathResponses,                    
+                    responses: pathResponses,                    
                     success: false,
                     report: "ERROR: Session Did Not End As Expected",
                 };
@@ -107,7 +115,7 @@ async function testPath(path, endpoint, info, session, functionMap) {
         }
         if (i === path.length - 1) {
             return {
-                responseTree: pathResponses,     
+                responses: pathResponses,     
                 success: true,           
                 report: "Branch Ended"
             }

@@ -16,7 +16,8 @@
                         }
                       }
                     },
-                    "shouldEndSession": false                    
+                    "repeatRequest": 3,
+                    "shouldEndSession": false
                 },
                 {
                     "requestType": "IntentRequest",
