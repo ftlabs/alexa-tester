@@ -94,7 +94,6 @@ async function testPath(path, endpoint, info, session, functionMap) {
         attributes = response.sessionAttributes || {};
 
         pathResponses[i] = {
-            node: node,
             response: response
         };
 
@@ -102,22 +101,34 @@ async function testPath(path, endpoint, info, session, functionMap) {
             if (response.response.shouldEndSession) {
                 return {
                     responses: pathResponses,
+                    path: path,
                     success: true,
                     report: "Session Ended As Expected"
                 };
             } else {
                 return {
-                    responses: pathResponses,                    
+                    responses: pathResponses,  
+                    path: path,                  
                     success: false,
                     report: "ERROR: Session Did Not End As Expected",
                 };
             }
         }
         if (i === path.length - 1) {
-            return {
-                responses: pathResponses,     
-                success: true,           
-                report: "Branch Ended"
+            if (response.response.shouldEndSession) {
+                return {
+                    responses: pathResponses,  
+                    path: path,                  
+                    success: false,
+                    report: "ERROR: Session Unexpectedly Ended"
+                };
+            } else {
+                return {
+                    responses: pathResponses, 
+                    path: path,    
+                    success: true,           
+                    report: "Branch Ended"
+                }
             }
         }
     }

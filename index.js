@@ -16,6 +16,10 @@ alexaTester(filePath, endpoint, functionsMap)
 
         for (let r of response) {
             if (r.success) count += 1;
+            if (!r.success) {
+                console.log(r.path);
+                console.log(r.report);
+            }
             success = success && r.success;
         }
         if (count != 1) plural = 'es';
