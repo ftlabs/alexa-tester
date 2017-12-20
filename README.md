@@ -6,6 +6,10 @@ Run against an Alexa Skill by specifying the file path of the skill model, skill
 
 ```$ node index.js endpoint_url skill_model_path function_mapping_path```
 
+An example model and function is provided in the repository. You can run this against the [Make Connections skill](https://github.com/ftlabs/correlations-game) with the following command:
+
+```$ node index.js http://localhost:8060/alexa models/example-complex.json examples/correlations-game/helpers/answer-functions.js```
+
 ## Skill Model
 
 The skill model that needs to be passed to the tester is not the same as the Interaction Model defined in the Alexa Developer Console. Models are defined in a tree structure. Below is an example of a simple model where a 'No' intent after launch should end the skill session. Alexa Tester will validate that this is correct.
