@@ -1,6 +1,8 @@
 'use strict';
 const helper = require('./helpers/helper');
 const rp = require('request-promise');
+const chalk = require('chalk');
+
 
 function getSimpleNode(node, repeatedNode) {
     let simpleNode = {
@@ -61,7 +63,9 @@ async function testSkillTree(skillTreeJson, endpoint, functionMap) {
             sessionId: (i + '').padStart(4, "0")
         };
         return testPath(path, endpoint, info, session, functionMap);
-    }));
+    })).catch(e => {
+        throw e;
+    });
 }
 
 async function testPath(path, endpoint, info, session, functionMap) {
@@ -83,13 +87,18 @@ async function testPath(path, endpoint, info, session, functionMap) {
             };
         }
         const newRequest = helper.buildRequest(info, session, attributes, node);
-
-        const response = await rp({
-            method: 'POST',
-            uri: endpoint,
-            body: newRequest,
-            json: true
-        });
+        let response;
+        try {
+            response = await rp({
+                method: 'POST',
+                uri: endpoint,
+                body: newRequest,
+                json: true
+            });
+        }
+        catch(e) {
+            throw e;
+        }
 
         attributes = response.sessionAttributes || {};
 

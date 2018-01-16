@@ -1,11 +1,10 @@
 const alexaTester = require('./alexa-tester');
+const chalk = require('chalk');
 
 const args = process.argv;
-
 const endpoint = args[2];
 const filePath = args[3];
 const functionsMapPath = args[4];
-
 const functionsMap = require(`./${functionsMapPath}`);
 
 alexaTester(filePath, endpoint, functionsMap)
@@ -25,8 +24,11 @@ alexaTester(filePath, endpoint, functionsMap)
         if (count != 1) plural = 'es';
 
         if (success) {
-            console.log(`Success. ${count}/${response.length} branch${plural} passed.`);
+            console.log(`${chalk.bold.green('Success:')} ${count}/${response.length} branch${plural} passed.`);
         } else {
-            console.log(`Failure. ${count}/${response.length} branch${plural} passed.`);
+            console.log(`${chalk.bold.red('Failure:')} ${count}/${response.length} branch${plural} passed.`);
         }
+    }).catch(e => {
+        console.log(chalk.bold.red(e.message));
+        console.log(e.error)
     });
