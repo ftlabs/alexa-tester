@@ -29,6 +29,12 @@ alexaTester(filePath, endpoint, functionsMap)
             console.log(`${chalk.bold.red('Failure:')} ${count}/${response.length} branch${plural} passed.`);
         }
     }).catch(e => {
-        console.log(chalk.bold.red(e.message));
-        console.log(e.error)
+        const requiresAuth = e.statusCode && e.statusCode == 401;
+        if (requiresAuth) {
+            console.log(chalk.bold.red("Error: Unauthorized, have you disabled authentication within the Alexa skill?"))
+        }
+        else {
+            console.log(chalk.bold.red(e.message));
+            console.log(e.error)
+        }
     });
