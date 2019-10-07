@@ -6,8 +6,6 @@ patch:
   SNYK-JS-LODASH-450202:
     - request-promise > request-promise-core > lodash:
         patched: '2019-07-04T12:42:25.978Z'
-      snyk > lodash:
-        patched: '2019-07-04T12:44:10.132Z'
     - snyk > snyk-nodejs-lockfile-parser > lodash:
         patched: '2019-07-04T12:44:10.132Z'
     - snyk > @snyk/dep-graph > lodash:
@@ -27,4 +25,6 @@ patch:
     - snyk > snyk-php-plugin > @snyk/composer-lockfile-parser > lodash:
         patched: '2019-07-04T12:44:10.132Z'
     - snyk > snyk-mvn-plugin > lodash:
+        patched: '2019-07-04T12:44:10.132Z'
+    - snyk > lodash:
         patched: '2019-07-04T12:44:10.132Z'
